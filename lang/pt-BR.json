@@ -13,6 +13,30 @@
     "descanso": {
       "limiteCurtos": "O grupo já fez três descansos curtos seguidos. O próximo precisa ser longo, e longo só em santuário.",
       "longoExigeSantuario": "Descanso longo só é possível dentro de um santuário."
+    },
+    "controles": {
+      "titulo": "Jornada",
+      "pintar": "Pintar hex",
+      "definirGrupo": "Definir token do grupo",
+      "painel": "Abrir painel da jornada"
+    },
+    "habitat": {
+      "floresta": "Floresta",
+      "montanha": "Montanha",
+      "pantano": "Pântano",
+      "campina": "Campina",
+      "deserto": "Deserto",
+      "gelo": "Gelo",
+      "aquatico": "Aquático",
+      "ruinas": "Ruínas"
+    },
+    "pintar": {
+      "titulo": "Pintar hex",
+      "habitat": "Habitat",
+      "terreno": "Terreno",
+      "corrompido": "Corrompido pela mácula",
+      "santuario": "Santuário",
+      "salvar": "Salvar"
     }
   }
 }
