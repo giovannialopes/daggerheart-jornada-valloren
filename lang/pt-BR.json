@@ -67,6 +67,18 @@
       "marcar": "Marcar",
       "semCaixas": "Não há caixa disponível para marcar no tier atual.",
       "semTokenGrupo": "Nenhum token do grupo definido nesta cena."
+    },
+    "avisos": {
+      "gradeNaoHexagonal": "Esta cena não usa grade hexagonal. As ferramentas de jornada ficam inativas aqui.",
+      "selecioneUmToken": "Selecione o token que representa o grupo antes de usar este botão.",
+      "grupoDefinido": "{nome} agora é o token do grupo nesta cena."
+    },
+    "settings": {
+      "tierManual": {
+        "nome": "Tier do grupo",
+        "dica": "Deixe em automático para derivar do maior nível entre os personagens dos jogadores.",
+        "automatico": "Automático"
+      }
     }
   }
 }
