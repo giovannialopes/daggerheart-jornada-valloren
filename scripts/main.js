@@ -1,6 +1,6 @@
 import { CamadaJornada, acoesDaJornada } from "./canvas/camada-hex.js";
 import { abrirDialogoPintar } from "./canvas/ferramenta-pintar.js";
-import { MODULO, tipoHexDaGrade } from "./dados/hexes.js";
+import { MODULO, revelarVizinhos, tipoHexDaGrade } from "./dados/hexes.js";
 import { gravarEstado } from "./dados/estado.js";
 import { registrarBotaoDeMedo } from "./fluxo/encontro.js";
 import { registrarHooksDeViagem } from "./fluxo/viagem.js";
@@ -55,12 +55,25 @@ async function aoClicarNoCanvas(evento) {
   if (canvas.activeLayer !== canvas.jornada) return;
   if (game.activeTool !== "pintar") return;
 
-  const ponto = evento.data.getLocalPosition(canvas.stage);
+  // No PIXI 7 (Foundry v13/v14) o evento é um FederatedPointerEvent e expõe
+  // getLocalPosition() direto; no PIXI 6 o método vinha em `evento.data`.
+  const fonte = typeof evento?.getLocalPosition === "function" ? evento : evento?.data;
+  if (typeof fonte?.getLocalPosition !== "function") {
+    console.error(`${MODULO} | evento de ponteiro sem getLocalPosition`, evento);
+    return;
+  }
+
+  const ponto = fonte.getLocalPosition(canvas.stage);
   const offset = canvas.grid.getOffset(ponto);
   await abrirDialogoPintar(canvas.scene, offset);
 }
 
 async function definirTokenDoGrupo() {
+  if (!game.user.isGM) {
+    ui.notifications.warn(game.i18n.localize("JORNADA.avisos.somenteMestre"));
+    return;
+  }
+
   const selecionado = canvas.tokens.controlled[0];
   if (!selecionado) {
     ui.notifications.warn(game.i18n.localize("JORNADA.avisos.selecioneUmToken"));
@@ -71,6 +84,8 @@ async function definirTokenDoGrupo() {
     tokenGrupoId: selecionado.document.id,
     hexAtual: chaveHex(offset)
   });
+  // O hex onde o grupo começa também precisa sair da névoa.
+  await revelarVizinhos(canvas.scene, offset);
   ui.notifications.info(
     game.i18n.format("JORNADA.avisos.grupoDefinido", { nome: selecionado.document.name })
   );

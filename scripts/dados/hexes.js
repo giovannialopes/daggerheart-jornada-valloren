@@ -70,18 +70,20 @@ export async function gravarHex(scene, offset, dados) {
 }
 
 /**
- * Marca como revelados os seis vizinhos do hex dado.
+ * Marca como revelado o hex dado e os seis vizinhos dele.
+ * O próprio hex entra na conta porque é onde o grupo está: sem isso o token
+ * ficaria debaixo da névoa no mapa dos jogadores.
  * @returns {Promise<string[]>} chaves que passaram de oculto para revelado
  */
 export async function revelarVizinhos(scene, offset) {
-  const tipo = tipoHexDaGrade(scene.grid?.type);
+  const tipo = tipoHexDaGrade(scene?.grid?.type);
   if (!tipo) return [];
 
   const hexes = lerHexes(scene);
   const novas = [];
 
-  for (const vizinho of vizinhos(offset, tipo)) {
-    const chave = chaveHex(vizinho);
+  for (const alvo of [offset, ...vizinhos(offset, tipo)]) {
+    const chave = chaveHex(alvo);
     const atual = hexes[chave] ?? { ...HEX_PADRAO };
     if (atual.revelado) continue;
     hexes[chave] = { ...atual, revelado: true };

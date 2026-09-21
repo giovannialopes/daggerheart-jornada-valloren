@@ -44,7 +44,9 @@
       "confirmar": "Entrar em {habitat} — terreno {terreno}, {dias} dia(s) de viagem. Confirmar?",
       "naoAdjacenteTitulo": "Hex não adjacente",
       "naoAdjacente": "Esse hex não faz fronteira com o hex atual do grupo. Reposicionar sem cobrar dias de viagem?",
-      "confirmacaoEmAndamento": "Já existe uma confirmação de viagem em andamento. Aguarde."
+      "confirmacaoEmAndamento": "Já existe uma confirmação de viagem em andamento. Aguarde.",
+      "pinturaCancelada": "Viagem cancelada: o hex de destino continua sem habitat.",
+      "erroInesperado": "Algo deu errado ao confirmar a viagem. Veja o console para os detalhes."
     },
     "encontro": {
       "remetente": "Jornada",
@@ -71,7 +73,8 @@
     "avisos": {
       "gradeNaoHexagonal": "Esta cena não usa grade hexagonal. As ferramentas de jornada ficam inativas aqui.",
       "selecioneUmToken": "Selecione o token que representa o grupo antes de usar este botão.",
-      "grupoDefinido": "{nome} agora é o token do grupo nesta cena."
+      "grupoDefinido": "{nome} agora é o token do grupo nesta cena.",
+      "somenteMestre": "Só o Mestre pode usar esta ação."
     },
     "settings": {
       "tierManual": {
