@@ -9,6 +9,10 @@
     "dias": {
       "um": "1 dia de viagem",
       "varios": "{dias} dias de viagem"
+    },
+    "descanso": {
+      "limiteCurtos": "O grupo já fez três descansos curtos seguidos. O próximo precisa ser longo, e longo só em santuário.",
+      "longoExigeSantuario": "Descanso longo só é possível dentro de um santuário."
     }
   }
 }
