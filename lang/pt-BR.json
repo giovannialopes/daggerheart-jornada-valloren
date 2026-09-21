@@ -37,6 +37,21 @@
       "corrompido": "Corrompido pela mácula",
       "santuario": "Santuário",
       "salvar": "Salvar"
+    },
+    "viagem": {
+      "somenteMestre": "Só o Mestre move o token do grupo.",
+      "confirmarTitulo": "Confirmar viagem",
+      "confirmar": "Entrar em {habitat} — terreno {terreno}, {dias} dia(s) de viagem. Confirmar?",
+      "naoAdjacenteTitulo": "Hex não adjacente",
+      "naoAdjacente": "Esse hex não faz fronteira com o hex atual do grupo. Reposicionar sem cobrar dias de viagem?"
+    },
+    "encontro": {
+      "remetente": "Jornada",
+      "titulo": "Dados de Encontro ({quantidade}d6)",
+      "disparou": "Encontro disparado.",
+      "semEncontro": "Nenhum encontro.",
+      "gastarMedo": "Gastar 1 Medo para forçar um encontro",
+      "forcadoPorMedo": "O Mestre gastou 1 Medo: encontro forçado."
     }
   }
 }
