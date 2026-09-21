@@ -116,3 +116,24 @@ describe("saoAdjacentes", () => {
     expect(saoAdjacentes({ i: 4, j: 4 }, { i: 4, j: 4 }, TIPO_HEX.ODD_R)).toBe(false);
   });
 });
+
+describe("offsetDaChave com chave malformada", () => {
+  // Chaves malformadas não deveriam chegar aqui — `normalizarHexes` as descarta.
+  // Os testes fixam o que acontece se uma escapar: nada de exceção, e um
+  // offset visivelmente inválido.
+  it("não lança e devolve coordenadas inválidas em texto puro", () => {
+    const r = offsetDaChave("abc");
+    expect(Number.isNaN(r.i)).toBe(true);
+    expect(r.j).toBeUndefined();
+  });
+
+  it("deixa a coluna indefinida quando falta o separador", () => {
+    const r = offsetDaChave("3");
+    expect(r.i).toBe(3);
+    expect(r.j).toBeUndefined();
+  });
+
+  it("ignora o excedente numa chave com partes demais", () => {
+    expect(offsetDaChave("1.2.3")).toEqual({ i: 1, j: 2 });
+  });
+});
