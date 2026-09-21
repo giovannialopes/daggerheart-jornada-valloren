@@ -43,8 +43,13 @@ export class PainelJornada extends foundry.applications.api.ApplicationV2 {
     }
   };
 
+  /** Instância única: o id do ApplicationV2 é fixo, duas não podem coexistir. */
+  static #instancia = null;
+
   static abrir() {
-    new PainelJornada().render({ force: true });
+    PainelJornada.#instancia ??= new PainelJornada();
+    PainelJornada.#instancia.render({ force: true });
+    return PainelJornada.#instancia;
   }
 
   #contexto() {
@@ -118,15 +123,43 @@ export class PainelJornada extends foundry.applications.api.ApplicationV2 {
     elemento.replaceChildren(resultado);
   }
 
-  static async #descansoCurto() {
+  /**
+   * Revalida antes de gravar: o botão desabilitado na interface não basta,
+   * porque quem não é Mestre nem sequer consegue escrever na flag.
+   * @returns {{permitido: boolean, estado: object}|null} null se barrado
+   */
+  #autorizarDescanso(regra) {
+    if (!game.user.isGM) {
+      ui.notifications.warn(game.i18n.localize("JORNADA.avisos.somenteMestre"));
+      return null;
+    }
+
     const scene = canvas.scene;
-    await gravarEstado(scene, aplicarDescansoCurto(lerEstado(scene)));
+    const estado = lerEstado(scene);
+    const hex = estado.hexAtual ? lerHex(scene, offsetDaChave(estado.hexAtual)) : null;
+    const veredito = regra({
+      descansosCurtos: estado.descansosCurtos,
+      emSantuario: hex?.santuario === true
+    });
+
+    if (!veredito.permitido) {
+      ui.notifications.warn(game.i18n.localize(veredito.motivo));
+      return null;
+    }
+    return { scene, estado };
+  }
+
+  static async #descansoCurto() {
+    const autorizado = this.#autorizarDescanso(podeDescansoCurto);
+    if (!autorizado) return;
+    await gravarEstado(autorizado.scene, aplicarDescansoCurto(autorizado.estado));
     this.render();
   }
 
   static async #descansoLongo() {
-    const scene = canvas.scene;
-    await gravarEstado(scene, aplicarDescansoLongo(lerEstado(scene)));
+    const autorizado = this.#autorizarDescanso(podeDescansoLongo);
+    if (!autorizado) return;
+    await gravarEstado(autorizado.scene, aplicarDescansoLongo(autorizado.estado));
     this.render();
   }
 

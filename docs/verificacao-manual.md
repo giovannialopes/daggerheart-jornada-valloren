@@ -24,7 +24,10 @@ Executar antes de cada release, num mundo de teste com o sistema Daggerheart.
       e aceitar não cobra dias.
 
 ## Névoa
-- [ ] Entrar num hex e confirmar que os seis vizinhos foram revelados.
+- [ ] Entrar num hex e confirmar que o próprio hex e os seis vizinhos foram
+      revelados — o token do grupo não pode ficar debaixo da névoa.
+- [ ] Como jogador, olhar uma região que o Mestre nunca pintou: ela aparece
+      coberta de névoa opaca, sem deixar a arte do mapa à mostra.
 - [ ] Abrir uma sessão como jogador: os hexes não revelados aparecem opacos.
 - [ ] Como Mestre, os mesmos hexes aparecem translúcidos.
 - [ ] Como jogador, tentar mover o token do grupo: o movimento é recusado.
