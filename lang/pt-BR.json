@@ -1,0 +1,14 @@
+{
+  "JORNADA": {
+    "terreno": {
+      "1": "Ótimo",
+      "2": "Bom",
+      "3": "Acidentado",
+      "4": "Extremo"
+    },
+    "dias": {
+      "um": "1 dia de viagem",
+      "varios": "{dias} dias de viagem"
+    }
+  }
+}
