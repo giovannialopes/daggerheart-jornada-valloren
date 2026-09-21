@@ -1,5 +1,5 @@
 import { abrirDialogoPintar } from "../canvas/ferramenta-pintar.js";
-import { lerHex, revelarVizinhos, tipoHexDaGrade } from "../dados/hexes.js";
+import { MODULO, lerHex, revelarVizinhos, tipoHexDaGrade } from "../dados/hexes.js";
 import { lerEstado, gravarEstado } from "../dados/estado.js";
 import { diasDeViagem } from "../regras/custo-viagem.js";
 import { chaveHex, offsetDaChave, saoAdjacentes } from "../regras/vizinhos-hex.js";
@@ -14,7 +14,11 @@ let confirmacaoEmAndamento = false;
 export function registrarHooksDeViagem() {
   Hooks.on("preUpdateToken", (documento, mudancas) => {
     const scene = documento.parent;
-    const tipo = tipoHexDaGrade(scene?.grid?.type);
+    // A conversão de coordenadas usa `canvas.grid`, que é a grade da cena
+    // aberta: se o token for de outra cena, não há como calcular o offset.
+    if (!scene?.id || scene.id !== canvas.scene?.id) return true;
+
+    const tipo = tipoHexDaGrade(scene.grid?.type);
     if (!tipo) return true;
 
     const estado = lerEstado(scene);
@@ -42,7 +46,10 @@ export function registrarHooksDeViagem() {
     });
 
     // Cancela o movimento e conduz a confirmação em separado.
-    confirmarViagem(scene, documento, destino, tipo);
+    confirmarViagem(scene, documento, destino, tipo).catch((erro) => {
+      console.error(`${MODULO} | falha ao confirmar a viagem`, erro);
+      ui.notifications.error(game.i18n.localize("JORNADA.viagem.erroInesperado"));
+    });
     return false;
   });
 }
@@ -71,6 +78,11 @@ async function confirmarViagem(scene, documento, destino, tipo) {
     if (!hex.habitat) {
       await abrirDialogoPintar(scene, destino);
       hex = lerHex(scene, destino);
+      // Mestre desistiu de pintar: sem habitat não há o que confirmar.
+      if (!hex.habitat) {
+        ui.notifications.warn(game.i18n.localize("JORNADA.viagem.pinturaCancelada"));
+        return;
+      }
     }
 
     const dias = diasDeViagem(hex.terreno);
@@ -98,8 +110,15 @@ async function aplicarMovimento(scene, documento, destino, { cobrarDias, dias = 
   const centro = canvas.grid.getCenterPoint(destino);
   const canto = canvas.grid.getTopLeftPoint(destino);
 
+  // O `preUpdateToken` seguinte consome o flag e o zera. Se o update falhar ou
+  // nem disparar o hook (cena bloqueada, veto de outro módulo, token apagado,
+  // update sem diferença), o `finally` garante que ele não fique armado.
   movimentoAprovado = documento.id;
-  await documento.update({ x: canto?.x ?? centro.x, y: canto?.y ?? centro.y });
+  try {
+    await documento.update({ x: canto?.x ?? centro.x, y: canto?.y ?? centro.y });
+  } finally {
+    if (movimentoAprovado === documento.id) movimentoAprovado = null;
+  }
 
   await gravarEstado(scene, {
     hexAtual: chaveHex(destino),
