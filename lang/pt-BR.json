@@ -43,7 +43,8 @@
       "confirmarTitulo": "Confirmar viagem",
       "confirmar": "Entrar em {habitat} — terreno {terreno}, {dias} dia(s) de viagem. Confirmar?",
       "naoAdjacenteTitulo": "Hex não adjacente",
-      "naoAdjacente": "Esse hex não faz fronteira com o hex atual do grupo. Reposicionar sem cobrar dias de viagem?"
+      "naoAdjacente": "Esse hex não faz fronteira com o hex atual do grupo. Reposicionar sem cobrar dias de viagem?",
+      "confirmacaoEmAndamento": "Já existe uma confirmação de viagem em andamento. Aguarde."
     },
     "encontro": {
       "remetente": "Jornada",

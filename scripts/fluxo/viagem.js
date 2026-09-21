@@ -8,6 +8,9 @@ import { rolarEncontro } from "./encontro.js";
 /** Movimento em curso já aprovado, para não reentrar no hook. */
 let movimentoAprovado = null;
 
+/** Trava enquanto uma confirmação de viagem está em andamento, para recusar arrastos sobrepostos. */
+let confirmacaoEmAndamento = false;
+
 export function registrarHooksDeViagem() {
   Hooks.on("preUpdateToken", (documento, mudancas) => {
     const scene = documento.parent;
@@ -28,6 +31,11 @@ export function registrarHooksDeViagem() {
       return false;
     }
 
+    if (confirmacaoEmAndamento) {
+      ui.notifications.warn(game.i18n.localize("JORNADA.viagem.confirmacaoEmAndamento"));
+      return false;
+    }
+
     const destino = canvas.grid.getOffset({
       x: mudancas.x ?? documento.x,
       y: mudancas.y ?? documento.y
@@ -43,41 +51,46 @@ export function registrarHooksDeViagem() {
  * Confirma o custo, aplica o movimento, revela vizinhos e rola o encontro.
  */
 async function confirmarViagem(scene, documento, destino, tipo) {
-  const estado = lerEstado(scene);
-  const origem = estado.hexAtual ? offsetDaChave(estado.hexAtual) : null;
+  confirmacaoEmAndamento = true;
+  try {
+    const estado = lerEstado(scene);
+    const origem = estado.hexAtual ? offsetDaChave(estado.hexAtual) : null;
 
-  if (origem && !saoAdjacentes(origem, destino, tipo)) {
-    const reposicionar = await foundry.applications.api.DialogV2.confirm({
-      window: { title: game.i18n.localize("JORNADA.viagem.naoAdjacenteTitulo") },
-      content: `<p>${game.i18n.localize("JORNADA.viagem.naoAdjacente")}</p>`,
+    if (origem && !saoAdjacentes(origem, destino, tipo)) {
+      const reposicionar = await foundry.applications.api.DialogV2.confirm({
+        window: { title: game.i18n.localize("JORNADA.viagem.naoAdjacenteTitulo") },
+        content: `<p>${game.i18n.localize("JORNADA.viagem.naoAdjacente")}</p>`,
+        rejectClose: false
+      });
+      if (!reposicionar) return;
+      await aplicarMovimento(scene, documento, destino, { cobrarDias: false });
+      return;
+    }
+
+    let hex = lerHex(scene, destino);
+    if (!hex.habitat) {
+      await abrirDialogoPintar(scene, destino);
+      hex = lerHex(scene, destino);
+    }
+
+    const dias = diasDeViagem(hex.terreno);
+    const confirmado = await foundry.applications.api.DialogV2.confirm({
+      window: { title: game.i18n.localize("JORNADA.viagem.confirmarTitulo") },
+      content: `<p>${game.i18n.format("JORNADA.viagem.confirmar", {
+        habitat: game.i18n.localize(`JORNADA.habitat.${hex.habitat}`),
+        terreno: game.i18n.localize(`JORNADA.terreno.${hex.terreno}`),
+        dias
+      })}</p>`,
       rejectClose: false
     });
-    if (!reposicionar) return;
-    await aplicarMovimento(scene, documento, destino, { cobrarDias: false });
-    return;
+    if (!confirmado) return;
+
+    await aplicarMovimento(scene, documento, destino, { cobrarDias: true, dias });
+    await revelarVizinhos(scene, destino);
+    await rolarEncontro(scene, destino);
+  } finally {
+    confirmacaoEmAndamento = false;
   }
-
-  let hex = lerHex(scene, destino);
-  if (!hex.habitat) {
-    await abrirDialogoPintar(scene, destino);
-    hex = lerHex(scene, destino);
-  }
-
-  const dias = diasDeViagem(hex.terreno);
-  const confirmado = await foundry.applications.api.DialogV2.confirm({
-    window: { title: game.i18n.localize("JORNADA.viagem.confirmarTitulo") },
-    content: `<p>${game.i18n.format("JORNADA.viagem.confirmar", {
-      habitat: game.i18n.localize(`JORNADA.habitat.${hex.habitat}`),
-      terreno: game.i18n.localize(`JORNADA.terreno.${hex.terreno}`),
-      dias
-    })}</p>`,
-    rejectClose: false
-  });
-  if (!confirmado) return;
-
-  await aplicarMovimento(scene, documento, destino, { cobrarDias: true, dias });
-  await revelarVizinhos(scene, destino);
-  await rolarEncontro(scene, destino);
 }
 
 async function aplicarMovimento(scene, documento, destino, { cobrarDias, dias = 0 }) {
