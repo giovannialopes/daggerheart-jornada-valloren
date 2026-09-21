@@ -1,0 +1,17 @@
+.jornada-painel { padding: 0.5rem 0.75rem; font-size: 0.95rem; }
+.jornada-painel .jornada-aviso { color: #b35; font-weight: 600; }
+.jornada-painel .jornada-dia { font-size: 1.2rem; font-weight: 700; margin: 0.25rem 0; }
+.jornada-painel .jornada-botoes { display: flex; gap: 0.5rem; margin: 0.5rem 0; }
+.jornada-painel .jornada-botoes button { flex: 1; }
+.jornada-painel .jornada-perdicao { list-style: none; margin: 0; padding: 0; }
+.jornada-painel .jornada-perdicao li { display: flex; gap: 0.5rem; padding: 0.15rem 0; }
+.jornada-painel .jornada-perdicao li.marcada .jornada-evento { opacity: 0.7; }
+.jornada-painel .jornada-caixa { width: 1rem; }
+
+.jornada-encontro .jornada-dados { display: flex; gap: 0.35rem; margin: 0.4rem 0; }
+.jornada-encontro .jornada-dado {
+  display: inline-block; min-width: 1.6rem; text-align: center;
+  padding: 0.15rem 0.3rem; border: 1px solid #8884; border-radius: 4px;
+}
+.jornada-encontro .jornada-dado.acerto { border-color: #c33; color: #c33; font-weight: 700; }
+.jornada-encontro .jornada-disparou { color: #c33; font-weight: 700; }
